@@ -23,7 +23,6 @@ public class HttpControllerTest {
 		m.setUsername("yg");
 		System.out.println(TAG+"getter : "+m.getUsername());
 		return "lombok Test 완료  : " + m.getId() +" , " + m.getUsername()+" , " +m.getPassword()+" , " +m.getEmail();
-		
 	}
 	
 	//인터넷 브라우저 요청은 무조건 get 요청밖에 허용되지 않음
