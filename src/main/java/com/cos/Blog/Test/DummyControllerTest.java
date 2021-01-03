@@ -1,8 +1,13 @@
 package com.cos.Blog.Test;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +17,30 @@ import com.cos.Blog.model.RoleType;
 import com.cos.Blog.model.User;
 import com.cos.Blog.repository.UserRepository;
 
+import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
+
 //html 파일이 아니라 data를 리턴해주는 Controller다
 @RestController
 public class DummyControllerTest {
 	
 	@Autowired // dummy 컨트롤러 테스트가 메모리에 뜰때 user레파지토리도 메모리에 뜨도록 해줌 // -> 의존성 주입(DI)
 	private UserRepository userRepository; 
+	//http://localhost:8000/blog/dummy/user
+	@GetMapping("/dummy/users")
+	public List<User> list(){
+		return userRepository.findAll(); // user 테이블에 있는 것 전체가 다 리턴 
+	}
+	
+	//한 페이지당 2건의 데이터를 리턴받아볼 예정
+	@GetMapping("/dummy/user")
+	public List<User> pageList(@PageableDefault(size = 2, sort="id", direction = Direction.DESC) Pageable pageable){
+//		List<User> users = userRepository.findAll(pageable).getContent(); //getContent 시 페이지 정보 없이 user 정보만 가져옴
+		Page<User> pagingUser = userRepository.findAll(pageable);
+		
+		
+		List<User> users = pagingUser.getContent();
+		return users;
+	}
 	
 	@GetMapping("/dummy/user/{id}") //{id}주소로 파라메터를 전달받을 수 있음 //http://localhost:8000/blog/dummy/user/3
 	public User detail(@PathVariable int id) {
